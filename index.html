@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rire Dynamique 😂</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --accent-color: #ffe66d;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text x="0" y="20" font-size="20">😂</text></svg>'), auto;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            perspective: 1000px;
+        }
+
+        .colonne {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .colonne::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--x) var(--y), 
+                      rgba(255,230,109,0.2) 0%, 
+                      transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .colonne:hover::before {
+            opacity: 1;
+        }
+
+        .colonne:hover {
+            transform: translateY(-10px) rotateX(calc(var(--y) * 1deg)) rotateY(calc(var(--x) * 1deg));
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .nom {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: transform 0.3s;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            opacity: 0;
+            max-height: 0;
+            transition: all 0.4s ease;
+            color: var(--secondary-color);
+            transform: translateZ(30px);
+        }
+
+        .active .message {
+            opacity: 1;
+            max-height: 100px;
+            margin-top: 1rem;
+        }
+
+        .emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .colonne:hover .emoji {
+            animation: bounce 0.5s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .ripple {
+            position: absolute;
+            background: rgba(255,255,255,0.4);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border-radius: 50%;
+            animation: rippleEffect 0.6s linear;
+        }
+
+        @keyframes rippleEffect {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 300px; height: 300px; opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="colonne" data-message="bakhanoo 😂">
+            <span class="emoji">👨💻</span>
+            <div class="nom">Momen</div>
+            <div class="message"></div>
+        </div>
+
+        <div class="colonne" data-message="balouchhh 😆">
+            <span class="emoji">🎮</span>
+            <div class="nom">Mohamed Amine</div>
+            <div class="message"></div>
+        </div>
+
+        <div class="colonne" data-message="mtrwch 😜">
+            <span class="emoji">🚀</span>
+            <div class="nom">Youssef</div>
+            <div class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Animation de la souris 3D
+        document.querySelectorAll('.colonne').forEach(colonne => {
+            colonne.addEventListener('mousemove', (e) => {
+                const rect = colonne.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                colonne.style.setProperty('--x', `${x}px`);
+                colonne.style.setProperty('--y', `${y}px`);
+            });
+        });
+
+        // Gestion des clics avec effet ripple
+        document.querySelectorAll('.colonne').forEach(colonne => {
+            colonne.addEventListener('click', function(e) {
+                // Effet ripple
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple';
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = `${e.clientX - rect.left}px`;
+                ripple.style.top = `${e.clientY - rect.top}px`;
+                this.appendChild(ripple);
+
+                // Gestion des messages
+                document.querySelectorAll('.colonne').forEach(c => {
+                    c.classList.remove('active');
+                    c.style.background = 'rgba(255, 255, 255, 0.95)';
+                });
+
+                this.classList.add('active');
+                this.style.background = 'linear-gradient(135deg, #ffffff, #f8f9fa)';
+                
+                const message = this.dataset.message;
+                this.querySelector('.message').textContent = message;
+
+                // Animation 3D
+                this.animate([
+                    { transform: 'rotateX(0) rotateY(0) scale(1)' },
+                    { transform: 'rotateX(-10deg) rotateY(10deg) scale(1.05)' },
+                    { transform: 'rotateX(0) rotateY(0) scale(1)' }
+                ], {
+                    duration: 500,
+                    iterations: 1
+                });
+            });
+        });
+    </script>
+</body>
+</html>
